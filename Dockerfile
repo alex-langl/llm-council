@@ -38,37 +38,23 @@ RUN uv sync --locked --no-dev --no-install-project
 # ============================================
 # Stage 3: Final Production Image
 # ============================================
-FROM python:3.13-slim
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-
-# Copy Python dependencies from builder
-COPY --from=backend-builder /app/.venv /app/.venv
-
-# Copy backend source code
-COPY backend/ ./backend/
-COPY main.py ./
-
 # Copy built frontend from frontend-builder
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY --from=frontend-builder /app/frontend/package*.json ./frontend/
 
-# Create data directory for SQLite storage
-RUN mkdir -p /app/data
+# Install only vite for preview server
+WORKDIR /app/frontend
+RUN npm install --production=false vite
 
 # Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PATH="/app/.venv/bin:$PATH" \
-    PYTHONPATH=/app
+ENV PORT=5173
 
-# Expose port
-EXPOSE 8000
+# Expose frontend port
+EXPOSE 5173
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/')" || exit 1
-
-# Run the application
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run Vite preview server
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "5173"]

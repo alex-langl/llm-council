@@ -9,6 +9,7 @@ services:
       - PYTHONUNBUFFERED=1
       - PORT=8001
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
     volumes:
       - ./data:/app/data
     healthcheck:

@@ -42,6 +42,16 @@ OPENROUTER_API_KEY=sk-or-v1-...
 
 Get your API key at [openrouter.ai](https://openrouter.ai/). Make sure to purchase the credits you need, or sign up for automatic top up.
 
+**For Production Deployment:**
+
+If you're deploying to a production environment (e.g., Railway), you'll also need to set:
+
+```bash
+CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com,https://other-domain.com
+```
+
+This allows the backend to accept requests from your deployed frontend. You can specify multiple origins separated by commas.
+
 ### 3. Configure Models (Optional)
 
 Edit `backend/config.py` to customize the council:

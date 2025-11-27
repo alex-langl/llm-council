@@ -1,0 +1,43 @@
+# ============================================
+# Stage 1: Build Frontend
+# ============================================
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+
+# Copy frontend package files
+COPY frontend/package*.json ./
+
+# Install ALL dependencies (including dev deps needed for build)
+RUN npm ci
+
+# Copy frontend source
+COPY frontend/ ./
+
+# Accept build argument
+ARG VITE_API_URL=http://localhost:8000
+ENV VITE_API_URL=$VITE_API_URL
+
+# Build frontend (environment variables are embedded here)
+RUN npm run build
+
+
+# ============================================
+# Stage 2: Serve Frontend
+# ============================================
+FROM node:20-alpine
+
+WORKDIR /app/frontend
+
+# Copy built frontend
+COPY --from=frontend-builder /app/frontend/dist ./dist
+COPY --from=frontend-builder /app/frontend/package*.json ./
+
+# Install vite for preview server
+RUN npm install vite
+
+# Expose frontend port
+EXPOSE 5173
+
+# Run Vite preview server
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "5173"]

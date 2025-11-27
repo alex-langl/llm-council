@@ -7,4 +7,7 @@ export default defineConfig({
   preview: {
     allowedHosts: ['llm-council-intwriting.up.railway.app'],
   },
+  server: {
+    allowedHosts: ['llm-council-intwriting.up.railway.app'],
+  },
 })

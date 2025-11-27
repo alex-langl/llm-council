@@ -32,6 +32,7 @@ WORKDIR /app/frontend
 # Copy built frontend
 COPY --from=frontend-builder /app/frontend/dist ./dist
 COPY --from=frontend-builder /app/frontend/package*.json ./
+COPY --from=frontend-builder /app/frontend/vite.config.js ./
 
 # Install vite for preview server
 RUN npm install vite

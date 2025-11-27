@@ -61,7 +61,8 @@ RUN mkdir -p /app/data
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:$PATH" \
-    PYTHONPATH=/app
+    PYTHONPATH=/app \
+    PORT=8000
 
 # Expose port
 EXPOSE 8000
@@ -70,5 +71,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/')" || exit 1
 
-# Run the application (shell form to expand $PORT variable)
-CMD uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Run the application with explicit shell to expand variables
+CMD ["/bin/sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
